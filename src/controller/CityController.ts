@@ -12,13 +12,20 @@ export const AllCities = (req: Request, res: Response) => {
   });
 };
 
-export const OneCity = (req: Request, res: Response) => {
-  City.findOne();
+export const SearchCity = (req: Request, res: Response) => {
+  City.find({name: req.body }, (err: any,result) => {
+    console.log(result);
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(result);
+    }
+  })
 };
 
 export const AddCity = (req: Request, res: Response) => {
-  const passName = errors.ErrorName(req.body.name.length);
-  const passUf = errors.ErrorUf(req.body.uf.length);
+  const passName = errors.ErrorName(req.body.name);
+  const passUf = errors.ErrorUf(req.body.uf);
   const passArea = errors.ErrorArea(req.body.area);
   const passPopulation = errors.ErrorPopulation(req.body.population);
   if (
@@ -41,8 +48,8 @@ export const AddCity = (req: Request, res: Response) => {
 };
 
 export const UpdateCity = (req: Request, res: Response) => {
-  const passName = errors.ErrorName(req.body.name.length);
-  const passUf = errors.ErrorUf(req.body.uf.length);
+  const passName = errors.ErrorName(req.body.name);
+  const passUf = errors.ErrorUf(req.body.uf);
   const passArea = errors.ErrorArea(req.body.area);
   const passPopulation = errors.ErrorPopulation(req.body.population);
   if (
