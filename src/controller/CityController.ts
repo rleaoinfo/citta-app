@@ -21,7 +21,7 @@ const clearText = (text: string) => {
     .replace(new RegExp("[nñ]", "gi"), "[nñ]")
     .replace(new RegExp("[cç]", "gi"), "[cç]");
 };
-export const index  = async (req: Request, res: Response) => {
+export const index = async (req: Request, res: Response) => {
   try {
     const returnCities = await City.find({ active: true });
     res.send(returnCities);
@@ -30,14 +30,28 @@ export const index  = async (req: Request, res: Response) => {
   }
 };
 
-export const view = async (req: Request, res: Response) => {
-  console.log(req.body);
+export const viewName = async (req: Request, res: Response) => {
+  console.log(req.params);
   try {
     const returnCity = await City.find({
       name: {
-        $regex: clearText("^" + req.body.name || "s" + req.body.name),
+        $regex: clearText("^" + req.params.name || "s" + req.params.name),
         $options: "i",
-      }, active: true,
+      },
+      active: true,
+    });
+    res.send(returnCity);
+  } catch (err) {
+    res.send(err);
+  }
+};
+
+export const viewId = async (req: Request, res: Response) => {
+  console.log(req.params);
+  try {
+    const returnCity = await City.find({
+      _id: req.params.id,
+      active: true,
     });
     res.send(returnCity);
   } catch (err) {
@@ -100,7 +114,7 @@ export const update = async (req: Request, res: Response) => {
       res.send(err);
     }
   } else {
-    res.send({ passName, passUf, passArea, passPopulation,passActive });
+    res.send({ passName, passUf, passArea, passPopulation, passActive });
   }
 };
 
