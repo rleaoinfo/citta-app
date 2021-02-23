@@ -1,8 +1,27 @@
 import { Request, Response } from "express";
 import * as errors from "../errors/index";
 import City from "../model/City";
-
-export const AllCities = async (req: Request, res: Response) => {
+//ver1
+function diacriticSensitiveRegex(string = "") {
+  return string
+    .replace(/a/g, "[a,á,à,ä]")
+    .replace(/e/g, "[e,é,ë]")
+    .replace(/i/g, "[i,í,ï]")
+    .replace(/o/g, "[o,ó,ö,ò]")
+    .replace(/u/g, "[u,ü,ú,ù]");
+}
+//verz
+const clearText = (text: string) => {
+  return text
+    .replace(new RegExp("[aãàáäâ]", "gi"), "[aãàáäâ]")
+    .replace(new RegExp("[eèéëê]", "gi"), "[eèéëê]")
+    .replace(new RegExp("[iìíïî]", "gi"), "[iìíïî]")
+    .replace(new RegExp("[oõòóöô]", "gi"), "[oõòóöô]")
+    .replace(new RegExp("[uùúüû]", "gi"), "[uùúüû]")
+    .replace(new RegExp("[nñ]", "gi"), "[nñ]")
+    .replace(new RegExp("[cç]", "gi"), "[cç]");
+};
+export const index  = async (req: Request, res: Response) => {
   try {
     const returnCities = await City.find({ active: true });
     res.send(returnCities);
@@ -11,11 +30,14 @@ export const AllCities = async (req: Request, res: Response) => {
   }
 };
 
-export const SearchCity = async (req: Request, res: Response) => {
+export const view = async (req: Request, res: Response) => {
   console.log(req.body);
-  try {'(\s+che|^che)'
+  try {
     const returnCity = await City.find({
-      name: { $regex: ("^"+req.body.name || "\s"+req.body.name )  , $options: "i" },
+      name: {
+        $regex: clearText("^" + req.body.name || "s" + req.body.name),
+        $options: "i",
+      }, active: true,
     });
     res.send(returnCity);
   } catch (err) {
@@ -23,7 +45,7 @@ export const SearchCity = async (req: Request, res: Response) => {
   }
 };
 
-export const AddCity = async (req: Request, res: Response) => {
+export const store = async (req: Request, res: Response) => {
   const passName = errors.ErrorName(req.body.name);
   const passUf = errors.ErrorUf(req.body.uf);
   const passArea = errors.ErrorArea(req.body.area);
@@ -46,27 +68,30 @@ export const AddCity = async (req: Request, res: Response) => {
   }
 };
 
-export const UpdateCity = async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response) => {
   const passName = errors.ErrorName(req.body.name);
   const passUf = errors.ErrorUf(req.body.uf);
   const passArea = errors.ErrorArea(req.body.area);
   const passPopulation = errors.ErrorPopulation(req.body.population);
+  const passActive = errors.ErrorActive(req.body.active);
   if (
     passName.value === true &&
     passUf.value === true &&
     passArea.value === true &&
-    passPopulation.value === true
+    passPopulation.value === true &&
+    passActive.value === true
   ) {
     const updatedCity = {
       name: req.body.name,
       uf: req.body.uf,
       area: req.body.area,
       population: req.body.population,
+      active: req.body.active,
       updatedAt: new Date(),
     };
     try {
-      const cityValidate = City.findByIdAndUpdate(
-        { _id: req.body.id },
+      const cityValidate = await City.findByIdAndUpdate(
+        { _id: req.params.id },
         updatedCity,
         []
       );
@@ -75,13 +100,13 @@ export const UpdateCity = async (req: Request, res: Response) => {
       res.send(err);
     }
   } else {
-    res.send({ passName, passUf, passArea, passPopulation });
+    res.send({ passName, passUf, passArea, passPopulation,passActive });
   }
 };
 
-export const RemoveCity = async (req: Request, res: Response) => {
+export const destroy = async (req: Request, res: Response) => {
   try {
-    const city = await City.deleteOne({ _id: req.body.id });
+    const city = await City.deleteOne({ _id: req.params.id });
     res.send(city);
   } catch (err) {
     res.send(err);

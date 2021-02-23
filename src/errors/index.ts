@@ -42,3 +42,11 @@ export const ErrorPopulation = (Population: any) => {
     return { value: false, description: "Population must be a number" };
   }
 };
+
+export const ErrorActive = (Active: any) => {
+  if (typeof Active === "boolean") {
+    return { value: true, description: "Ok" };
+  } else {
+    return { value: false, description: "Active must be a boolean" };
+  }
+};
