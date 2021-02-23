@@ -31,7 +31,6 @@ export const index = async (req: Request, res: Response) => {
 };
 
 export const viewName = async (req: Request, res: Response) => {
-  console.log(req.params);
   try {
     const returnCity = await City.find({
       name: {
@@ -47,7 +46,6 @@ export const viewName = async (req: Request, res: Response) => {
 };
 
 export const viewId = async (req: Request, res: Response) => {
-  console.log(req.params);
   try {
     const returnCity = await City.find({
       _id: req.params.id,
