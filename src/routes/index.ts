@@ -3,11 +3,10 @@ import * as CityController from "../controller/CityController";
 
 const router = express.Router();
 
-router.get("/city/allcities", CityController.index);
-router.get("/city/searchcityid/:id", CityController.viewId);
-router.get("/city/searchcityname/:name", CityController.viewName);
-router.post("/city/addcity", CityController.store);
-router.put("/city/updatecity/:id", CityController.update);
-router.delete("/city/removecity/:id", CityController.destroy);
+router.get("/cities", CityController.index);
+router.get("/cities/:idorname", CityController.view);
+router.post("/cities", CityController.store);
+router.put("/cities/:id", CityController.update);
+router.delete("/cities/:id", CityController.destroy);
 
 export default router;

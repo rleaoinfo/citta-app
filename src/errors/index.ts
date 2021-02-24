@@ -72,3 +72,21 @@ export const ErrorActive = (Active: any) => {
     return { value: false, description: "Active must be a boolean" };
   }
 };
+
+export const ErrorObj = (Obj: any) => {
+  const test = Object.keys(Obj);
+  for (var i in test) {
+    if (
+      test[i] == "name" ||
+      test[i] == "uf" ||
+      test[i] == "area" ||
+      test[i] == "population" ||
+      test[i] == "active"
+    ) {
+      continue;
+    } else {
+      return { value: false, description: "Object have wrong/missing JSON parameters" };
+    }
+  }
+  return { value: true, description: "Ok" };
+};

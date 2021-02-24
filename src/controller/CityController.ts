@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { query, Request, Response } from "express";
 import * as errors from "../errors/index";
 import City from "../model/City";
 //ver1
@@ -26,34 +26,42 @@ export const index = async (req: Request, res: Response) => {
     const returnCities = await City.find({ active: true });
     res.send(returnCities);
   } catch (err) {
+    res.status(500);
     res.send(err);
   }
 };
 
-export const viewName = async (req: Request, res: Response) => {
-  try {
-    const returnCity = await City.find({
-      name: {
-        $regex: clearText("^" + req.params.name || "s" + req.params.name),
-        $options: "i",
-      },
-      active: true,
-    });
-    res.send(returnCity);
-  } catch (err) {
-    res.send(err);
-  }
-};
-
-export const viewId = async (req: Request, res: Response) => {
-  try {
-    const returnCity = await City.find({
-      _id: req.params.id,
-      active: true,
-    });
-    res.send(returnCity);
-  } catch (err) {
-    res.send(err);
+export const view = async (req: Request, res: Response) => {
+  if (req.query.type == "name") {
+    try {
+      const returnCity = await City.find({
+        name: {
+          $regex: clearText(
+            "^" + req.params.idorname || "s" + req.params.idorname
+          ),
+          $options: "i",
+        },
+        active: true,
+      });
+      res.send(returnCity);
+    } catch (err) {
+      res.status(500);
+      res.send(err);
+    }
+  } else if (req.query.type == "id") {
+    try {
+      const returnCity = await City.findOne({
+        _id: req.params.idorname,
+        active: true,
+      });
+      res.send(returnCity);
+    } catch (err) {
+      res.status(500);
+      res.send(err);
+    }
+  } else {
+    res.status(400);
+    res.send({ value: false, description: "missing query options" });
   }
 };
 
@@ -71,48 +79,54 @@ export const store = async (req: Request, res: Response) => {
     const city = new City(req.body);
     try {
       const cityValidate = await city.save();
+      res.status(201);
       res.send(cityValidate);
     } catch (err) {
+      res.status(500);
       res.send(err);
     }
   } else {
+    res.status(400);
     res.send({ passName, passUf, passArea, passPopulation });
   }
 };
 
 export const update = async (req: Request, res: Response) => {
+  const passKeys = errors.ErrorObj(req.body);
   const passName = errors.ErrorName(req.body.name);
   const passUf = errors.ErrorUf(req.body.uf);
   const passArea = errors.ErrorArea(req.body.area);
   const passPopulation = errors.ErrorPopulation(req.body.population);
   const passActive = errors.ErrorActive(req.body.active);
   if (
-    passName.value === true &&
-    passUf.value === true &&
-    passArea.value === true &&
-    passPopulation.value === true &&
-    passActive.value === true
-  ) {
-    const updatedCity = {
-      name: req.body.name,
-      uf: req.body.uf,
-      area: req.body.area,
-      population: req.body.population,
-      active: req.body.active,
-      updatedAt: new Date(),
-    };
+    (passName.value === true ||
+      passUf.value === true ||
+      passArea.value === true ||
+      passPopulation.value === true ||
+      passActive.value === true) &&
+    passKeys.value === true
+  )
     try {
       const cityValidate = await City.findByIdAndUpdate(
-        { _id: req.params.id },
-        updatedCity,
-        []
+        req.params.id,
+        req.body,
+        { useFindAndModify: false }
       );
       res.send(cityValidate);
     } catch (err) {
+      res.status(500);
       res.send(err);
     }
-  } else {
-    res.send({ passName, passUf, passArea, passPopulation, passActive });
+  else {
+    res.status(400);
+    res.send({
+      passKeys,
+      passName,
+      passUf,
+      passArea,
+      passPopulation,
+      passActive,
+    });
   }
 };
 
@@ -121,6 +135,7 @@ export const destroy = async (req: Request, res: Response) => {
     const city = await City.deleteOne({ _id: req.params.id });
     res.send(city);
   } catch (err) {
+    res.status(500);
     res.send(err);
   }
 };
