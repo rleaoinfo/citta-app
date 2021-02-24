@@ -22,6 +22,13 @@ const clearText = (text: string) => {
     .replace(new RegExp("[cç]", "gi"), "[cç]");
 };
 export const index = async (req: Request, res: Response) => {
+  if (req.query.type != null) {
+    res.status(400);
+    res.send({
+      value: false,
+      description: "Detected query variables on index requisition",
+    });
+  }
   try {
     const returnCities = await City.find({ active: true });
     res.send(returnCities);
@@ -31,13 +38,12 @@ export const index = async (req: Request, res: Response) => {
   }
 };
 
-export const view = async (req: Request, res: Response) => {
-  if (req.query.type == "name") {
+export const viewname = async (req: Request, res: Response) => {
     try {
       const returnCity = await City.find({
         name: {
           $regex: clearText(
-            "^" + req.params.idorname || "s" + req.params.idorname
+            "^" + req.params.name || "s" + req.params.name
           ),
           $options: "i",
         },
@@ -48,20 +54,18 @@ export const view = async (req: Request, res: Response) => {
       res.status(500);
       res.send(err);
     }
-  } else if (req.query.type == "id") {
-    try {
-      const returnCity = await City.findOne({
-        _id: req.params.idorname,
-        active: true,
-      });
-      res.send(returnCity);
-    } catch (err) {
-      res.status(500);
-      res.send(err);
-    }
-  } else {
-    res.status(400);
-    res.send({ value: false, description: "missing query options" });
+};
+
+export const viewid = async (req: Request, res: Response) => {
+  try {
+    const returnCity = await City.findOne({
+      _id: req.params.id,
+      active: true,
+    });
+    res.send(returnCity);
+  } catch (err) {
+    res.status(500);
+    res.send(err);
   }
 };
 
