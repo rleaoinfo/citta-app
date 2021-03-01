@@ -74,19 +74,21 @@ export const ErrorActive = (Active: any) => {
 };
 
 export const ErrorObj = (Obj: any) => {
-  const test = Object.keys(Obj);
-  for (var i in test) {
+  const keys = Object.keys(Obj);
+  const variables = new Array();
+  for (var i in keys) {
     if (
-      test[i] == "name" ||
-      test[i] == "uf" ||
-      test[i] == "area" ||
-      test[i] == "population" ||
-      test[i] == "active"
+      keys[i] == "name" ||
+      keys[i] == "uf" ||
+      keys[i] == "area" ||
+      keys[i] == "population" ||
+      keys[i] == "active"
     ) {
+      variables.push(keys[i]);
       continue;
     } else {
       return { value: false, description: "Object have wrong/missing JSON parameters" };
     }
   }
-  return { value: true, description: "Ok" };
+  return { value: true, description: "Ok",variables};
 };
