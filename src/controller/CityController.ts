@@ -1,5 +1,4 @@
-import { query, Request, Response } from "express";
-import * as errors from "../errors/index";
+import {  Request, Response } from "express";
 import City from "../model/City";
 import clearText from "../../utils/index"
 
@@ -44,7 +43,6 @@ export const viewid = async (req: Request, res: Response) => {
 };
 
 export const store = async (req: Request, res: Response) => {
-  if (Object.keys(res.locals.createVal).length == 0) {
     const city = new City(req.body);
     try {
       const cityValidate = await city.save();
@@ -54,10 +52,6 @@ export const store = async (req: Request, res: Response) => {
       res.status(500);
       res.send(err);
     }
-  } else {
-    res.status(400);
-    res.send(res.locals.createVal);
-  }
 };
 
 export const update = async (req: Request, res: Response) => {

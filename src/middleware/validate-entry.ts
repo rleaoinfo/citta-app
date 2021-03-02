@@ -12,11 +12,27 @@ export const ValidateCreate = (req: any, res: any, next: any) => {
     passArea.value === true &&
     passPopulation.value === true
   ) {
-    res.locals.createVal = {};
     next();
   } else {
-    res.locals.createVal = { passName, passUf, passArea, passPopulation };
-    next();
+    const createVal =
+      "Name Status : " +
+      passName.value +
+      " - Name Description : " +
+      passName.description +
+      "||UF Status : " +
+      passUf.value +
+      " - UF Description : " +
+      passUf.description +
+      "||Area Status : " +
+      passArea.value +
+      " - Area Description : " +
+      passArea.description +
+      "||Population Status : " +
+      passPopulation.value +
+      " - Population Description : " +
+      passPopulation.description;
+    const error = new Error(createVal);
+    next(error);
   }
 };
 
@@ -35,54 +51,93 @@ export const ValidateUpdate = (req: any, res: any, next: any) => {
         if (passName.value) {
           continue;
         } else {
-          res.locals.updateVal = { passName };
-          next();
+          const nameError =
+            "Name Status : " +
+            passName.value +
+            " - Name Description : " +
+            passName.description;
+          const error = new Error(nameError);
+          next(error);
         }
       }
       if (variablesKeys[Number(key)] == "uf") {
         if (passUf.value) {
           continue;
         } else {
-          res.locals.updateVal = { passUf };
-          next();
+          const ufError =
+            "UF Status : " +
+            passUf.value +
+            " - UF Description : " +
+            passUf.description;
+          const error = new Error(ufError);
+          next(error);
         }
       }
       if (variablesKeys[Number(key)] == "area") {
         if (passArea.value) {
           continue;
         } else {
-          res.locals.updateVal = { passArea };
-          next();
+          const areaError =
+            "Area Status : " +
+            passArea.value +
+            " - Area Description : " +
+            passArea.description;
+          const error = new Error(areaError);
+          next(error);
         }
       }
       if (variablesKeys[Number(key)] == "population") {
         if (passPopulation.value) {
           continue;
         } else {
-          res.locals.updateVal = { passPopulation };
-          next();
+          const populationError =
+            "Population Status : " +
+            passPopulation.value +
+            " - Population Description : " +
+            passPopulation.description;
+          const error = new Error(populationError);
+          next(error);
         }
       }
       if (variablesKeys[Number(key)] == "active") {
         if (passActive.value) {
           continue;
         } else {
-          res.locals.updateVal = { passActive };
-          next();
+          const ActiveError =
+            "Active Status : " +
+            passActive.value +
+            " - Active Description : " +
+            passActive.description;
+          const error = new Error(ActiveError);
+          next(error);
         }
       }
     }
     res.locals.updateVal = {};
     next();
   } else {
-    res.locals.updateVal = {
-      passName,
-      passUf,
-      passArea,
-      passPopulation,
-      passActive,
-      passKeys,
-    };
-    next();
+    const updateVal =
+      "Name Status : " +
+      passName.value +
+      " - Name Description : " +
+      passName.description +
+      "||UF Status : " +
+      passUf.value +
+      " - UF Description : " +
+      passUf.description +
+      "||Area Status : " +
+      passArea.value +
+      " - Area Description : " +
+      passArea.description +
+      "||Population Status : " +
+      passPopulation.value +
+      " - Population Description : " +
+      passPopulation.description +
+      "Active Status : " +
+      passActive.value +
+      " - Active Description : " +
+      passActive.description;
+    const error = new Error(updateVal);
+    next(error);
   }
 };
