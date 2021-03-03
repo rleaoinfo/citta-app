@@ -55,7 +55,6 @@ export const store = async (req: Request, res: Response) => {
 };
 
 export const update = async (req: Request, res: Response) => {
-  if (Object.keys(res.locals.updateVal).length == 0)
     try {
       const cityValidate = await City.findByIdAndUpdate(
         req.params.id,
@@ -67,10 +66,6 @@ export const update = async (req: Request, res: Response) => {
       res.status(500);
       res.send(err);
     }
-  else {
-    res.status(400);
-    res.send(res.locals.updateVal);
-  }
 };
 
 export const destroy = async (req: Request, res: Response) => {
